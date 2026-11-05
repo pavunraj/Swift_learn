@@ -41,7 +41,7 @@ func logarithmicTime(_ N: Int) -> Int {
         result += 1
         
     }
-    print("I return result:",result)
+    print("Return result:",result)
     return result
 }
 

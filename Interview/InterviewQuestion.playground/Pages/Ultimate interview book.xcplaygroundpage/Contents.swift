@@ -1,7 +1,7 @@
 //: [Previous](@previous)
 
 import Foundation
-
+import SwiftUI
 // Remove duplicate array
 
 var nameList = ["pavun", "raj", "mani", "pavun", "palani"]
@@ -474,3 +474,357 @@ Task {
 
 
 
+struct NewNames {
+    var name: String?
+    // mutating only used on function
+   // var name: String?
+}
+//let names2 = NewNames(name: "pavun")
+var names = NewNames(name: "pavun")
+// let names = NewNames(name: "pavun") can't assign the value because " let " marked and either add mutating keyword
+//names2.name = "New names"
+names.name = "New names"
+
+
+// find  the unique numbers appears
+let arrNames = ["Oa", "Pavun", "Ola", "Ather", "pavun", "pavun", "Bajaj", "bajaj"]
+
+
+let filterNames = arrNames.filter { name in
+    let normalString = name.lowercased()
+   
+    return arrNames.filter { $0.lowercased() == normalString }.count == 1
+    
+}
+
+print("Matched filterNames:",filterNames)
+
+
+
+protocol Addable {
+    static func + (lhs: Self, rhs: Self) -> Self
+}
+
+extension Int: Addable {}
+extension String: Addable {}
+
+private func generics<T: Addable>(a:  T?, b:  T?) -> T?{
+    guard let a = a, let b = b else { return nil }
+    
+    let result = a + b
+    return result
+}
+
+print(generics(a: 12, b: 12) as Int? as Any)
+print(generics(a: "welcome", b: "World") as Any)
+
+let arrayWithDuplicates = [10, 20, 30, 30, 40, 50, 50]
+
+let removeDuplicate = Array(Set(arrayWithDuplicates))
+print(removeDuplicate)
+
+// another method
+
+var newArraywithRemoveDup: [Int] = []
+arrayWithDuplicates.forEach { number in
+    if !newArraywithRemoveDup.contains(number) {
+        newArraywithRemoveDup.append(number)
+    }
+}
+
+print(newArraywithRemoveDup)
+
+
+// with Filter
+
+let values = arrayWithDuplicates.filter({ num in
+    print("number:", num)
+    return arrayWithDuplicates.firstIndex(of: num) == arrayWithDuplicates.lastIndex(of: num)
+    
+})
+
+print("Final num",values)
+
+
+// Simple Json File create and Codable use
+
+// Data and Mode protocol
+
+// Codable
+// Equatable
+// Hashable
+// Identiable
+// Comparable
+//
+
+// Collection protocol
+// Sequance
+// Collection
+// IteratorProtocol
+
+
+struct UserDetails: Codable {
+    let id: Int
+    let name: String
+    let email: String
+}
+
+let jsonData = """
+[
+{
+"id": 1,
+"name": "Pavun",
+"email": "pavun@gmail.com"
+},
+{
+"id": 2,
+"name": "Pavun1",
+"email": "pavun1@gmail.com"
+},
+
+{
+"id": 3,
+"name": "Pavun3",
+"email": "pavun3@gmail.com"
+}]
+""" .data(using: .utf8)
+
+let jsonDecode = try JSONDecoder().decode([UserDetails].self, from: jsonData!)
+jsonDecode.forEach { details in
+    print(details.email)
+
+}
+var wordFrequencies: [String: Int] = ["apple": 4,
+"banana": 3, "cherry": 2, "date": 1]
+
+var findMaximumVlaue: [String: Int] = [:]
+
+for(word, frequency) in wordFrequencies {
+    
+    if frequency >= 3 {
+        findMaximumVlaue[word] = frequency
+    }
+    
+}
+
+print(findMaximumVlaue)
+
+
+var filterMaximumNumber = wordFrequencies.filter { $0.value >=  3 }
+
+print(filterMaximumNumber)
+
+
+// associatedTypes
+
+protocol Container {
+    associatedtype dictionayItem
+    
+    
+    var item: dictionayItem { get set }
+}
+
+class APIService: Container {
+    typealias dictionayItem = String
+    var item: String
+    
+    init(item: String) {
+        self.item = item
+    }
+}
+
+
+protocol Repository {
+    associatedtype model
+    
+    func fetchData() -> model
+}
+
+
+class UserRepository: Repository {
+    
+    func fetchData() -> String {
+        return "pavun"
+    }
+}
+
+
+// Associated Value
+// An assocaiated values means enum is carry some additional values
+
+ enum Error {
+    
+case invalidURL(String)
+    case invalidData(Data)
+    case invalidResponse(URLResponse)
+    case decodeError(Int)
+}
+
+
+import Combine
+import UIKit
+
+class HomePageVC: UIViewController {
+    @IBOutlet weak var textfield: UITextField!
+    @IBOutlet weak var button: UIButton!
+    
+    private var cancellables = Set<AnyCancellable>()
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        textfield.publisher(for: \.text)
+            .map {$0?.isEmpty == false }
+            .assign(to: \.isEnabled, on: button)
+            .store(in: &cancellables)
+    }
+}
+
+
+let subject = PassthroughSubject<String,Never>()
+
+var  cancellable = Set<AnyCancellable>()
+
+subject
+    .map { $0.uppercased()}
+    .sink { value in
+        print(value)
+    }
+    .store(in: &cancellable)
+
+
+subject.send("Swift")
+subject.send("Combine")
+
+
+// 2D array with return sum value
+
+var Array1: [[Int]] = [[1, 2, 3, 4, 5, 6], [7, 8, 9, 14, 15, 26]]
+    
+    var newElement = Array1.flatMap { $0 }.reduce(0, +)
+   
+//Array.reduce(0, +)
+print(newElement)
+    
+
+// Fird the first match condition
+
+let numbers1 = [1, 3, 4, 6]
+
+let newNumber = numbers1.first{ $0 % 2 == 0}
+
+print(newNumber)
+
+let names1 = ["Pavun","Raj"]
+let scores = [85, 92, 78]
+
+for (name, score) in zip(names1, scores) {
+    print("\(name): \(score)")
+}
+
+
+// Dependancy injection
+
+protocol ProfileDetailsProtocol
+{
+    func fetchProfileInfo()
+}
+
+
+class APIServices: ProfileDetailsProtocol {
+    func fetchProfileInfo() {
+        print("Fetch user profile details from API")
+    }
+
+}
+
+class UserProfileViewModel {
+    private var services: ProfileDetailsProtocol
+    
+    init(services: ProfileDetailsProtocol) {
+        self.services = services
+    }
+    
+    func loadProfile() {
+        services.fetchProfileInfo()
+    }
+}
+
+
+let apiServices = APIServices()
+let viewModel = UserProfileViewModel(services: apiServices)
+viewModel.loadProfile()
+
+
+var newArrayItem = ["Hello", "Pavunraj"] + ["How are you!"]
+print(newArrayItem)
+
+
+var numbers22 = [1, 2, 3, 4, 5, 6]
+for number in numbers22 {
+    if number.isMultiple(of: 2) {
+        print(number)
+    }
+}
+
+// Varadic function
+func sum(of value: Int...) {
+    print(value)
+}
+
+sum(of: 1,2,34,5)
+
+
+func fetchData(then parse: (String) -> Void) {
+    let data = "Success!"
+    parse(data)
+}
+
+fetchData {  (data: String) in
+    print("Data received: \(data)")
+    
+}
+
+// filter the data
+let numbers21 = [1, 2, 3, 4, 5, 6]
+
+var result = numbers21.filter {
+    $0.isMultiple(of: 2)
+}
+
+print(result)
+
+func visitPlaces() -> (String) -> Void {
+    var places: [String: Int] = [:]
+    return {
+        places[$0, default: 0]  += 1
+        let numbervisit = places[$0, default: 0]
+        print("The number of times \($0) the times \(numbervisit)")
+    }
+}
+let place = visitPlaces()
+place("Salem")
+place("Chennai")
+place("Salem")
+
+
+struct GalacticaCrew {
+    var isCylon = false
+}
+var starbuck = GalacticaCrew()
+var tyrol = starbuck
+tyrol.isCylon = true
+print(starbuck.isCylon)
+print(tyrol.isCylon)
+
+class Statue {
+    var sculptor = "Unknown"
+}
+var venusDeMilo = Statue()
+venusDeMilo.sculptor = "Alexandros of Antioch"
+var david = Statue()
+david.sculptor = "Michaelangelo"
+print(venusDeMilo.sculptor)
+print(david.sculptor)
+
+protocol Swimmable {
+    var depth: String { get }
+}
